@@ -538,7 +538,7 @@ func GetRandomBytes(l int) []byte {
 	return b
 }
 
-func (s *EasyStream) Skip(count int) (err error) {
+func (s *EasyStream) Pad(count int) (err error) {
 	if s.Mode == DecodeMode {
 		_, err = s.r.Seek(int64(count), io.SeekCurrent)
 	} else {

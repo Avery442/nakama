@@ -166,7 +166,7 @@ func LobbyJoinEntrants(logger *zap.Logger, matchRegistry MatchRegistry, tracker 
 	// Leave any other lobby group stream.
 	tracker.UntrackLocalByModes(session.ID(), map[uint8]struct{}{StreamModeMatchmaking: {}, StreamModeGuildGroup: {}}, guildGroupStream)
 
-	connectionSettings := label.GetEntrantConnectMessage(e.RoleAlignment, e.IsPCVR, e.DisableEncryption, e.DisableMAC)
+	connectionSettings := evr.NewLobbySessionSuccess(label.Mode, label.ID.UUID, label.GetGroupID(), label.GameServer.Endpoint, int16(e.RoleAlignment), e.DisableEncryption, e.DisableMAC).Version5()
 
 	// Send the lobby session success message to the game server.
 	if err := SendEVRMessages(serverSession, false, connectionSettings); err != nil {

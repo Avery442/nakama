@@ -103,7 +103,7 @@ func (m *LobbyFindSessionRequest) Stream(s *EasyStream) error {
 				}
 				return s.StreamNumber(binary.LittleEndian, &flags)
 			}
-			return s.Skip(3) // Skip 3 bytes for alignment
+			return s.Pad(3) // Skip 3 bytes for alignment
 		},
 		func() error { return s.StreamGUID(&m.CurrentLobbyID) },
 		func() error { return s.StreamGUID(&m.GroupID) },

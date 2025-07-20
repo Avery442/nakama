@@ -91,7 +91,7 @@ func (m *LobbyJoinSessionRequest) Stream(s *EasyStream) error {
 				}
 				return s.StreamNumber(binary.LittleEndian, &flags)
 			}
-			return s.Skip(4)
+			return s.Pad(4)
 		},
 		func() error {
 

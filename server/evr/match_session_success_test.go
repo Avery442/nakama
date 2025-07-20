@@ -4,16 +4,16 @@ import (
 	"testing"
 )
 
-func TestPacketEncoderSettingsFromFlags(t *testing.T) {
+func TestEncoderFlagUnpacking(t *testing.T) {
 	tests := []struct {
-		flags              uint64
-		expectedEncryption bool
-		expectedMac        bool
-		expectedDigestSize int
-		expectedIteration  int
-		expectedMacKeySize int
-		expectedKeySize    int
-		expectedRandomSize int
+		flags                 uint64
+		expectedEncryption    bool
+		expectedMac           bool
+		expectedDigestSize    int
+		expectedIteration     int
+		expectedMacSecretSize int
+		expectedSecretSize    int
+		expectedRandomSize    int
 	}{
 		{0, false, false, 0, 0, 0, 0, 0},                                // test with all flags disabled
 		{1, true, false, 0, 0, 0, 0, 0},                                 // test with encryption flag enabled
@@ -42,14 +42,42 @@ func TestPacketEncoderSettingsFromFlags(t *testing.T) {
 		if settings.MACPBKDF2IterationCount != tt.expectedIteration {
 			t.Errorf("MacPBKDF2IterationCount = %v, want %v", settings.MACPBKDF2IterationCount, tt.expectedIteration)
 		}
-		if settings.MACKeySize != tt.expectedMacKeySize {
-			t.Errorf("MacKeySize = %v, want %v", settings.MACKeySize, tt.expectedMacKeySize)
+		if settings.MACSecretSize != tt.expectedMacSecretSize {
+			t.Errorf("MacSecretSize = %v, want %v", settings.MACSecretSize, tt.expectedMacSecretSize)
 		}
-		if settings.EncryptionKeySize != tt.expectedKeySize {
-			t.Errorf("EncryptionKeySize = %v, want %v", settings.EncryptionKeySize, tt.expectedKeySize)
+		if settings.EncryptionSecretSize != tt.expectedSecretSize {
+			t.Errorf("EncryptionSecretSize = %v, want %v", settings.EncryptionSecretSize, tt.expectedSecretSize)
 		}
-		if settings.RandomKeySize != tt.expectedRandomSize {
-			t.Errorf("RandomKeySize = %v, want %v", settings.RandomKeySize, tt.expectedRandomSize)
+		if settings.StreamSecretSize != tt.expectedRandomSize {
+			t.Errorf("RandomSecretSize = %v, want %v", settings.StreamSecretSize, tt.expectedRandomSize)
 		}
+	}
+}
+
+func TestEncoderFlagPacking(t *testing.T) {
+	settings := DefaultServerEncoderSettings()
+	flags := settings.ToFlags()
+	parsed := PacketEncoderSettingsFromFlags(flags)
+
+	if parsed.EncryptionEnabled != settings.EncryptionEnabled {
+		t.Errorf("EncryptionEnabled mismatch: got %v, want %v", parsed.EncryptionEnabled, settings.EncryptionEnabled)
+	}
+	if parsed.MACEnabled != settings.MACEnabled {
+		t.Errorf("MACEnabled mismatch: got %v, want %v", parsed.MACEnabled, settings.MACEnabled)
+	}
+	if parsed.MACDigestSize != settings.MACDigestSize {
+		t.Errorf("MACDigestSize mismatch: got %v, want %v", parsed.MACDigestSize, settings.MACDigestSize)
+	}
+	if parsed.MACPBKDF2IterationCount != settings.MACPBKDF2IterationCount {
+		t.Errorf("MACPBKDF2IterationCount mismatch: got %v, want %v", parsed.MACPBKDF2IterationCount, settings.MACPBKDF2IterationCount)
+	}
+	if parsed.MACSecretSize != settings.MACSecretSize {
+		t.Errorf("MACSecretSize mismatch: got %v, want %v", parsed.MACSecretSize, settings.MACSecretSize)
+	}
+	if parsed.EncryptionSecretSize != settings.EncryptionSecretSize {
+		t.Errorf("EncryptionSecretSize mismatch: got %v, want %v", parsed.EncryptionSecretSize, settings.EncryptionSecretSize)
+	}
+	if parsed.StreamSecretSize != settings.StreamSecretSize {
+		t.Errorf("RandomSecretSize mismatch: got %v, want %v", parsed.StreamSecretSize, settings.StreamSecretSize)
 	}
 }

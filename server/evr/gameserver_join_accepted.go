@@ -18,7 +18,7 @@ func NewGameServerJoinAllowed(entrantIDs ...uuid.UUID) *GameServerJoinAllowed {
 
 func (m *GameServerJoinAllowed) Stream(s *EasyStream) error {
 	return RunErrorFunctions([]func() error{
-		func() error { return s.Skip(1) },
+		func() error { return s.Pad(1) },
 		func() error {
 			if s.Mode == DecodeMode {
 				m.EntrantIDs = make([]uuid.UUID, s.Len()/16)

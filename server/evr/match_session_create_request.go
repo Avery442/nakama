@@ -52,14 +52,14 @@ func (m *LobbyCreateSessionRequest) Stream(s *EasyStream) error {
 			if s.Mode == DecodeMode {
 				m.Entrants = make([]Entrant, c) // Limit to 16
 			}
-			return s.Skip(7) // Alignment
+			return s.Pad(7) // Alignment
 		},
 		func() error {
 			lt := uint8(m.LobbyType)
 			if err := s.StreamNumber(binary.LittleEndian, &lt); err != nil {
 				m.LobbyType = LobbyType(lt)
 			}
-			return s.Skip(3) // Alignment
+			return s.Pad(3) // Alignment
 		},
 		func() error {
 			switch s.Mode {

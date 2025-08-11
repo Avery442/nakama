@@ -9,13 +9,13 @@ Always reference these instructions first and fallback to search or bash command
 - Build the repository:
   ```bash
   # Download dependencies (takes ~1 minute)
-  go mod vendor
+  make vendor
   
   # Build (takes ~1 minute)
   make nakama
   
   # Verify build
-  ./nakama --version
+  make verify
   ```
 
 ### Database Setup
@@ -49,18 +49,17 @@ Always reference these instructions first and fallback to search or bash command
 - Only run server/evr/*_test.go and server/evr_*_test.go unit tests:
   ```bash
   # Run EVR unit tests (takes ~2-3 minutes)
-  go test -short -vet=off ./server/evr/...
-  go test -short -vet=off ./server -run ".*evr.*"
+  make test-evr
   ```
 
 ### Code Quality and Linting
 - Use gofmt for formatting:
   ```bash
   # Format check (takes ~1 second)
-  gofmt -l . | head -10
+  make format-check
   
   # Fix formatting
-  gofmt -w .
+  make format
   ```
 
 
@@ -100,18 +99,18 @@ Always reference these instructions first and fallback to search or bash command
 ### Quick Development Cycle
 1. Make code changes
 2. Run `make nakama` (takes ~1 minute)
-3. Test with `./nakama --version`
+3. Test with `make verify`
 4. Start server and validate manually
-5. Run `gofmt -w .` before committing
+5. Run `make format` before committing
 
 ### Full Validation Cycle (takes under 10 minutes)
-1. `go mod vendor` (if dependencies changed)
+1. `make vendor` (if dependencies changed)
 2. `make nakama`
 3. Start database: `docker compose up -d postgres`
 4. Run migrations
 5. Start server and test API endpoints
-6. Run EVR unit tests: `go test -short -vet=off ./server/evr/...`
-7. Format code with gofmt
+6. Run EVR unit tests: `make test-evr`
+7. Format code with `make format`
 
 ## Project Structure
 
@@ -137,7 +136,7 @@ Always reference these instructions first and fallback to search or bash command
 
 ```bash
 # Quick build and test cycle
-make nakama && ./nakama --version
+make nakama && make verify
 
 # Start development environment
 docker compose up -d postgres
@@ -148,13 +147,13 @@ docker compose up -d postgres
 rm nakama && make nakama
 
 # Format code
-gofmt -w .
+make format
 
 # Check for formatting issues
-gofmt -l .
+make format-check
 
 # Run EVR tests
-go test -short -vet=off ./server/evr/...
+make test-evr
 
 # Basic API test
 curl "127.0.0.1:7350/v2/account/authenticate/device?create=true" \
@@ -170,7 +169,7 @@ curl "127.0.0.1:7350/v2/account/authenticate/device?create=true" \
 - Check port conflicts: Ensure ports 7349, 7350 are available
 
 ### Build failures
-- Clean vendor directory: `rm -rf vendor && go mod vendor`
+- Clean vendor directory: `rm -rf vendor && make vendor`
 - Check Go version: `go version` (requires Go 1.24+)
 - Verify all dependencies downloaded: Look for any network errors
 

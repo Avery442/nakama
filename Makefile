@@ -7,7 +7,7 @@ SRC_FILES=$(shell find . -type f -name '*.go')
 SRC_DIRS=$(shell find . -type d -name '*.go' | sed 's/\/[^/]*$$//')
 PWD=$(shell pwd)
 
-.PHONY: docker dist
+.PHONY: docker dist vendor test-evr format format-check verify
 
 all: nakama
 
@@ -33,3 +33,20 @@ release: $(SRC_FILES)
 
 push: release
 	docker push echotools/nakama:$(TAG) echotools/nakama:latest
+
+# Development targets
+vendor:
+	go mod vendor
+
+test-evr:
+	go test -short -vet=off ./server/evr/...
+	go test -short -vet=off ./server -run ".*evr.*"
+
+format:
+	gofmt -w .
+
+format-check:
+	gofmt -l . | head -10
+
+verify: nakama
+	./nakama --version
